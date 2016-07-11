@@ -15,14 +15,6 @@ def get_version(package):
         return re.search("__version__ = ['\"]([^'\"]+)['\"]", src).group(1)
 
 
-def get_requirements(requirements):
-    ret = []
-    with open(requirements, 'r') as req:
-        for line in req:
-            ret.append(line)
-    return ret
-
-
 name = 'katapal_util'
 version = get_version('katapal_util')
 package = 'katapal_util'
@@ -31,7 +23,13 @@ url = 'https://github.com/dxiao2003/katapal_util'
 author = 'David Xiao'
 author_email = 'dxiao@katapal.com'
 license = 'MIT'
-install_requires = get_requirements('requirements.txt')
+install_requires = [
+    "Django>=1.9.6",
+    "djangorestframework>=3.3.2",
+    "phonenumbers==7.2.6",
+    "PyJWT>=1.4.0",
+    "wheel>=0.24.0",
+]
 
 
 def read(*paths):
