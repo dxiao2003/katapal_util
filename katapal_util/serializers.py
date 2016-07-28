@@ -12,15 +12,15 @@ class HasProviderSerializer(ModelSerializer):
     def load_provider(self, data):
         try:
             if "id" in data:
-                return self.Meta.model.objects.get(pk=data["id"])
+                return self.Meta.provider_model.objects.get(pk=data["id"])
             else:
                 kwargs = {}
                 if "name" in data:
                     kwargs["name"] = data["name"]
                 if "account" in data:
                     kwargs["account"] = data["account"]
-                return self.Meta.model.objects.get(**kwargs)
-        except self.Meta.model.DoesNotExist:
+                return self.Meta.provider_model.objects.get(**kwargs)
+        except self.Meta.provider_model.DoesNotExist:
             raise ValidationError("Unable to retrieve provider")
 
 
