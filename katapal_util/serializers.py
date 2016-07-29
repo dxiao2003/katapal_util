@@ -1,7 +1,7 @@
 from __future__ import unicode_literals, absolute_import
 
-from django.utils.translation import ugettext_lazy as _l
-from phonenumber_field.phonenumber import to_python
+from django.utils.translation import ugettext_lazy as _l, ugettext as _
+from phonenumber_field.phonenumber import to_python, PhoneNumber
 from phonenumber_field.validators import validate_international_phonenumber
 from rest_framework.exceptions import ValidationError
 from rest_framework.serializers import ModelSerializer, CharField
@@ -38,9 +38,16 @@ class PhoneNumberField(CharField):
     default_validators = [validate_international_phonenumber]
 
     def to_internal_value(self, data):
-        return "+" + data
+        try:
+            return PhoneNumber.from_string(data)
+        except:
+            raise ValidationError(_("Enter a valid phone number"))
 
     def to_representation(self, value):
         phonenumber = to_python(value)
         if phonenumber.is_valid():
-            return str(phonenumber)[1:] # remove leading +
+            p = str(phonenumber)
+            if p.startswith("+"):
+                return p[1:] # remove leading +
+            else:
+                return p
