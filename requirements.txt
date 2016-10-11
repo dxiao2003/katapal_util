@@ -4,3 +4,4 @@ phonenumbers==7.4.4
 PyJWT==1.4.0
 wheel==0.24.0
 django-phonenumber-field==1.0.0
+pytz==2016.7

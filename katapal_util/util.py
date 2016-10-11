@@ -4,6 +4,8 @@ import logging
 from datetime import datetime, timedelta
 from functools import wraps
 
+import pytz
+from django.utils import timezone
 from phonenumber_field.phonenumber import PhoneNumber
 from rest_framework.exceptions import ValidationError
 
@@ -68,21 +70,69 @@ class ObjectBuilder(object):
             self._add_elem(property_name, v, duplicate)
 
 
-def get_week_start(dt):
+def get_week_start(dt, tzname=None):
     """
+    Computes the start of the week in the time zone specified in setting, or
+    UTC by default.
+
     :param dt: The datetime
+    :param setting: the autoreply setting
     :return: The start of the week of dt, relative to UTC
     """
+    if tzname:
+        tz = timezone(tzname)
+    else:
+        tz = pytz.utc
+
+    if dt.tzinfo:
+        dt = dt.astimezone(tz)
+    else:
+        dt = tz.localize(dt)
+
     start_day = dt - timedelta(days=dt.weekday())
-    return start_day.replace(hour=0, minute=0, second=0, microsecond=0)
+    start_of_week = start_day.replace(hour=0, minute=0, second=0, microsecond=0)
+
+    return start_of_week.astimezone(pytz.utc)
 
 
-def interval_from_weekly(week_start, interval):
+def start_end_from_interval(week_start, interval):
 
-    start_time = week_start + timedelta(microseconds=int(interval["start"]))
-    end_time = start_time + timedelta(microseconds=int(interval["duration"]))
+    start_time = week_start + timedelta(milliseconds=int(interval["start"]))
+    end_time = start_time + timedelta(milliseconds=int(interval["duration"]))
 
     return start_time, end_time
+
+
+def interval_from_start_end(week_start, start_time, end_time):
+    duration = end_time - start_time
+    start = start_time - week_start
+    return {"start": int(start.total_seconds() * 1000),
+            "duration": int(duration.total_seconds() * 1000)}
+
+
+def find_next_valid_time(current_week_start, weekly_schedule, now=None,
+                         validity_start_time=None):
+    now = now or timezone.now()
+    # get start/end times for all intervals in last, current and next week
+    # in order to handle candidate times right on the edge between weeks
+    all_start_end_times = [
+        start_end_from_interval(week_start, i)
+        for i in weekly_schedule
+        for week_start in [current_week_start,
+                           current_week_start - timedelta(days=7),
+                           current_week_start + timedelta(days=7)]
+        ]
+
+    next_valid_time = datetime.max.replace(tzinfo=pytz.UTC)
+
+    for start_time, end_time in all_start_end_times:
+        if start_time <= now <= end_time:
+            return now
+        elif start_time >= now and next_valid_time >= start_time and \
+                (not validity_start_time or start_time >= validity_start_time):
+            next_valid_time = start_time
+
+    return next_valid_time
 
 
 def format_phonenumber(potential_number):
