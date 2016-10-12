@@ -80,7 +80,7 @@ def get_week_start(dt, tzname=None):
     :return: The start of the week of dt, relative to UTC
     """
     if tzname:
-        tz = timezone(tzname)
+        tz = pytz.timezone(tzname)
     else:
         tz = pytz.utc
 
