@@ -188,3 +188,23 @@ def split_into_words_by_char_count(s, chunk_size, max_from_end=None):
                 chunk_start += len(subchunks[0])
 
     return chunks
+
+
+from rest_framework.pagination import LimitOffsetPagination as \
+    BaseLimitOffsetPagination
+
+
+class LimitOffsetPaginationMax100(BaseLimitOffsetPagination):
+    max_limit = 100
+
+
+class LimitOffsetPaginationMax500(BaseLimitOffsetPagination):
+    max_limit = 500
+
+
+class LimitOffsetPaginationMax2500(BaseLimitOffsetPagination):
+    max_limit = 2500
+
+
+class LimitOffsetPaginationMax10000(BaseLimitOffsetPagination):
+    max_limit = 10000
