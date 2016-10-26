@@ -29,6 +29,7 @@ install_requires = [
     "phonenumbers==7.2.6",
     "PyJWT>=1.4.0",
     "wheel>=0.24.0",
+    "django-phonenumber-field>=1.0.0"
 ]
 
 
