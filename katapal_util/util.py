@@ -110,18 +110,39 @@ def interval_from_start_end(week_start, start_time, end_time):
             "duration": int(duration.total_seconds() * 1000)}
 
 
-def find_next_valid_time(current_week_start, weekly_schedule, now=None,
-                         validity_start_time=None):
-    now = now or timezone.now()
-    # get start/end times for all intervals in last, current and next week
-    # in order to handle candidate times right on the edge between weeks
-    all_start_end_times = [
+def current_week_start_end_times(current_week_start, weekly_schedule):
+    return [
         start_end_from_interval(week_start, i)
         for i in weekly_schedule
         for week_start in [current_week_start,
                            current_week_start - timedelta(days=7),
                            current_week_start + timedelta(days=7)]
-        ]
+    ]
+
+
+def is_valid_time(weekly_schedule, tz, now=None):
+    now = now or timezone.now()
+    week_start = get_week_start(now, tz)
+
+    # get start/end times for all intervals in last, current and next week
+    # in order to handle candidate times right on the edge between weeks
+    all_start_end_times = current_week_start_end_times(week_start,
+                                                       weekly_schedule)
+
+    for start_time, end_time in all_start_end_times:
+        if start_time <= now <= end_time:
+            return True
+
+    return False
+
+
+def find_next_valid_time(current_week_start, weekly_schedule, now=None,
+                         validity_start_time=None):
+    now = now or timezone.now()
+    # get start/end times for all intervals in last, current and next week
+    # in order to handle candidate times right on the edge between weeks
+    all_start_end_times = current_week_start_end_times(current_week_start,
+                                                       weekly_schedule)
 
     next_valid_time = datetime.max.replace(tzinfo=pytz.UTC)
 
