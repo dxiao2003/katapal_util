@@ -37,6 +37,10 @@ class PhoneNumberField(CharField):
 
     default_validators = [validate_international_phonenumber]
 
+    def __init__(self, remove_plus=False, *args, **kwargs):
+        super(PhoneNumberField, self).__init__(*args, **kwargs)
+        self.remove_plus = remove_plus
+
     def to_internal_value(self, data):
         try:
             return PhoneNumber.from_string(data)
@@ -47,7 +51,7 @@ class PhoneNumberField(CharField):
         phonenumber = to_python(value)
         if phonenumber.is_valid():
             p = str(phonenumber)
-            if p.startswith("+"):
+            if p.startswith("+") and self.remove_plus:
                 return p[1:] # remove leading +
             else:
                 return p
