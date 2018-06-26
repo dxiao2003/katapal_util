@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 
 JSONEncoder_olddefault = JSONEncoder.default
 
+
 def JSONEncoder_newdefault(self, o):
     if isinstance(o, UUID):
         return str(o)
@@ -26,6 +27,7 @@ def JSONEncoder_newdefault(self, o):
         return o.isoformat()
     else:
         return JSONEncoder_olddefault(self, o)
+
 
 JSONEncoder.default = JSONEncoder_newdefault
 
