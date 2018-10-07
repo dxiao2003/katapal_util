@@ -26,7 +26,7 @@ license = 'MIT'
 install_requires = [
     "Django>=1.9.6",
     "djangorestframework>=3.3.2",
-    "phonenumbers==7.2.6",
+    "phonenumbers>=7.4,4",
     "PyJWT>=1.4.0",
     "wheel>=0.24.0",
     "django-phonenumber-field>=1.0.0"
