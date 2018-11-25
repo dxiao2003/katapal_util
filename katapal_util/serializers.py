@@ -19,6 +19,8 @@ class HasProviderSerializer(ModelSerializer):
                     kwargs["name"] = data["name"]
                 if "account" in data:
                     kwargs["account"] = data["account"]
+                if "instance_name" in data:
+                    kwargs["instance_name"] = data["instance_name"]
                 return self.Meta.provider_model.objects.get(**kwargs)
         except self.Meta.provider_model.DoesNotExist:
             raise ValidationError("Unable to retrieve provider")

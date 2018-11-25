@@ -13,6 +13,7 @@ class ProviderTemplate(models.Model):
     instance_name = models.CharField(max_length=256)
     credentials = JSONField(default=dict, blank=True)
     data = JSONField(default=dict, blank=True)
+    active = models.BooleanField(default=True)
 
     class Meta:
         abstract = True
