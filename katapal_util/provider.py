@@ -59,7 +59,7 @@ class ModuleLoader(object):
             else:
                 self.module_lookup = module_lookup
 
-        if not getattr(self, "module_lookup"):
+        if getattr(self, "module_lookup", None) is None:
             raise ValueError(_("Must specify module lookup"))
 
     def load_module(self, provider_instance):
