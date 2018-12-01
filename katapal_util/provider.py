@@ -59,10 +59,10 @@ class ModuleLoader(object):
             else:
                 self.module_lookup = module_lookup
 
+    def load_module(self, provider_instance):
         if getattr(self, "module_lookup", None) is None:
             raise ValueError(_("Must specify module lookup"))
 
-    def load_module(self, provider_instance):
         if not isinstance(provider_instance, ProviderTemplate):
             raise TypeError(_("Must provide valid provider instance"))
 
