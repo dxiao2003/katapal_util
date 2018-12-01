@@ -52,10 +52,15 @@ class ModuleLoader(object):
     def __call__(self, *args, **kwargs):
         raise NotImplementedError
 
-    def __init__(self, module_lookup, *args, **kwargs):
-        if not isinstance(module_lookup, dict):
-            raise TypeError(_("Module lookup must be a dict"))
-        self.module_lookup = module_lookup
+    def __init__(self, module_lookup=None, *args, **kwargs):
+        if module_lookup is not None:
+            if not isinstance(module_lookup, dict):
+                raise TypeError(_("Module lookup must be a dict"))
+            else:
+                self.module_lookup = module_lookup
+
+        if not getattr(self, "module_lookup"):
+            raise ValueError(_("Must specify module lookup"))
 
     def load_module(self, provider_instance):
         if not isinstance(provider_instance, ProviderTemplate):
