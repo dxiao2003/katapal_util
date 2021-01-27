@@ -170,7 +170,7 @@ def format_phonenumber(potential_number):
 class RichSearchFilter(SearchFilter):
     def get_search_terms(self, request):
         params = request.query_params.get(self.search_param, '')
-        return map(format_phonenumber, params.replace(',', ' ').split())
+        return list(map(format_phonenumber, params.replace(',', ' ').split()))
 
 
 def split_into_words_by_char_count(s, chunk_size, max_from_end=None):
